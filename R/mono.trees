@@ -1,0 +1,64 @@
+mono.trees = function(x, y) {
+
+## x = igraph graph
+## y = cluster of genetic compositions 
+
+## 1. Identify subtree
+
+n.nodes = length(V(x))
+mono = list()
+
+for (i in 1:n.nodes) {
+
+subtree = igraph::dfs(graph = x, root = V(x)[i], neimode = "out", 
+unreachable = FALSE)$order
+
+subtree = subtree[!is.na(subtree)]
+subtree = names(subtree)
+
+## 2. Investigate if monochromatic 
+
+## find composition of nodes
+comp = na.omit(y[subtree])
+sub = as.character(comp)
+lab.sub = labels (comp)
+
+## if all compositions equal, tree is monochromatic; add to 'mono'
+
+if (length(sub)>1 && length(unique(sub)) == 1) {
+name = paste('tree', i, sep = '')
+mono[[name]]  = subtree
+}
+}
+
+## => mono is a list containing all monochromatic trees 
+
+## 3. Discard internal monochromatic trees
+
+for(v in 1:length(mono)){
+d.internal = mono[-v]  
+
+for(i in 1:length(d.internal)){
+if(mono[[v]] %in% d.internal[[i]] == TRUE){
+mono[v] = 0
+}
+}
+}
+
+
+
+## => mono is a list containing large exclusive monochromatic trees
+
+## 4. Classify monochromatic trees 
+
+## 4.1 by sets of tips 
+
+
+
+
+
+## 4.2 in order of tip/node ratio
+
+
+  
+mono = mono[order(sapply(mono, length), decreasing = TRUE)]
